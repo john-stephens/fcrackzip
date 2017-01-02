@@ -35,6 +35,7 @@ typedef enum { FALSE = 0, TRUE = 1 } bool;
 #include "callbacks.h"
 #include "validate.h"
 #include "brutegen.h"
+#include "dictgen.h"
 
 int use_unzip;
 
@@ -42,8 +43,6 @@ static method *crack_method = methods;
 static int method_number = -1;
 static int residuent = 0;
 static int modul = 1;
-
-static FILE *dict_file;
 
 int REGPARAM
 check_unzip (const char *pw)
@@ -63,27 +62,6 @@ check_unzip (const char *pw)
     }
 
   return !status;
-}
-
-static int
-dictionary_gen (void)
-{
-  /* should optimize this, comparing prefixes would be a net win.
-   * however, not using fgets but something better might be an
-   * even higher win :(
-   */
-  if (fgets (pw, MAX_PW+1, dict_file))
-    {
-      pw[strlen (pw) - 1] = 0;
-      return -1;
-    }
-  else
-    {
-      if (!feof (dict_file))
-        perror ("dictionary_read_next_password");
-
-      return 0;
-    }
 }
 
 static int benchmark_count;
@@ -377,18 +355,15 @@ main (int argc, char *argv[])
           exit (1);
         }
 
-      if (!(dict_file = fopen (pw, "r")))
+      if (init_dictionary_gen (pw))
         {
           perror (pw);
           exit (1);
         }
       else
         {
-          *(pw_end = pw) = 0;
-          dictionary_gen (); /* fetch first password */
           crack_method->crack_pw (dictionary_gen, print_callback);
-
-          fclose (dict_file);
+          finish_dictionary_gen ();
         }
 
       break;

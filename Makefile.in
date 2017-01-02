@@ -97,7 +97,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_fcrackzip_OBJECTS = main.$(OBJEXT) crack.$(OBJEXT) \
-	validate.$(OBJEXT) callbacks.$(OBJEXT) brutegen.$(OBJEXT)
+	validate.$(OBJEXT) callbacks.$(OBJEXT) brutegen.$(OBJEXT) \
+	dictgen.$(OBJEXT)
 fcrackzip_OBJECTS = $(am_fcrackzip_OBJECTS)
 fcrackzip_DEPENDENCIES = @LIBOBJS@
 am_zipinfo_OBJECTS = zipinfo.$(OBJEXT)
@@ -305,7 +306,7 @@ EXTRA_DIST = fcrackzip.txt fcrackzip.html fcrackzip.1 gencrack.pl zipcrack.c cpm
 #LDFLAGS = -g
 man_MANS = fcrackzip.1
 noinst_HEADERS = getopt.h
-fcrackzip_SOURCES = main.c crack.c crack.h crc32.h validate.c callbacks.c brutegen.c
+fcrackzip_SOURCES = main.c crack.c crack.h crc32.h validate.c callbacks.c brutegen.c dictgen.c
 fcrackzip_LDADD = @LIBOBJS@
 zipinfo_SOURCES = zipinfo.c
 zipinfo_LDADD = @LIBOBJS@
@@ -441,6 +442,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/brutegen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crack.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dictgen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/validate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/zipinfo.Po@am__quote@
