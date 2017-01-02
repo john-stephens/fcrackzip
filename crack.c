@@ -14,9 +14,6 @@ u8 files[MAX_FILES * HEADER_SIZE];
 const char *file_path[MAX_FILES];
 int file_count;
 
-u8 bf_next[256];
-u8 bf_last;
-
 int verbosity;
 
 static u8 mult_tab[16384];

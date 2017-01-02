@@ -19,10 +19,6 @@ typedef int (*gen_func)(void);
  */
 typedef int (*callback_func)(const char *, const char *);
 
-/* brute force.  */
-extern u8 bf_next[256];
-extern u8 bf_last;
-
 extern int verbosity;
 extern int use_unzip;
 
