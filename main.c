@@ -32,6 +32,8 @@ typedef enum { FALSE = 0, TRUE = 1 } bool;
 #endif
 
 #include "crack.h"
+#include "callbacks.h"
+#include "validate.h"
 
 int use_unzip;
 
@@ -62,36 +64,6 @@ check_unzip (const char *pw)
     }
 
   return !status;
-}
-
-/* misc. callbacks.  */
-
-static int
-false_callback (const char *pw, const char *info)
-{
-  (void) pw;
-  (void) info;                        /* suppress warning */
-  return 0;
-}
-
-static int
-true_callback (const char *pw, const char *info)
-{
-  (void) pw;
-  (void) info;                        /* suppress warning */
-  return 1;
-}
-
-static int
-print_callback (const char *pw, const char *info)
-{
-  if (!use_unzip || check_unzip (pw))
-    {
-      printf ("possible pw found: %s (%s)\n", pw, info ? info : "");
-      /*exit(0); */
-    }
-
-  return 0;
 }
 
 static int
@@ -141,36 +113,6 @@ dictionary_gen (void)
 
       return 0;
     }
-}
-
-static int
-validate_gen (void)
-{
-  return 0;
-}
-
-static void
-validate (void)
-{
-  u8 header[HEADER_SIZE + 1] =
-  {0xf4, 0x28, 0xd6, 0xee, 0xd7, 0xd2,
-   0x3c, 0x1a, 0x20, 0xab, 0xdf, 0x73,
-   0xd6, 0xba, 0};                /* PW: "Martha" */
-  strcpy ((char *) files, (char *) header);        /* yeah, dirty... */
-  file_count = 1;
-
-  if (crack_method->desc[0] == 'z')
-    {
-      crack_method->init_crack_pw ();
-
-      strcpy (pw, "Martha");
-      if (crack_method->crack_pw (validate_gen, true_callback))
-        printf ("validate ok (%s == Martha)\n", pw);
-      else
-        printf ("validation error (%s != Martha)\n", pw);
-    }
-  else
-    printf ("validate only works for zip methods, use --method to select one.\n");
 }
 
 static void
@@ -427,7 +369,8 @@ main (int argc, char *argv[])
         break;
 
       case 'V':
-        validate ();
+        // @todo BUG: Depends on method being passed before validate flag
+        validate (crack_method);
         exit (0);
 
       case 'c':
