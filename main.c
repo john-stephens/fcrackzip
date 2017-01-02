@@ -14,14 +14,6 @@ typedef enum { FALSE = 0, TRUE = 1 } bool;
 #else
 #include "getopt.h"
 #endif
-#ifdef HAVE_GETTIMEOFDAY
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-#endif
 
 #include <string.h>
 
@@ -42,8 +34,6 @@ int use_unzip;
 
 static method *crack_method = methods;
 static int method_number = -1;
-static int residuent = 0;
-static int modul = 1;
 
 int REGPARAM
 check_unzip (const char *pw)
@@ -86,7 +76,6 @@ usage (int ec)
           "          [-l|--length min-max]         check password with length min to max\n"
           "          [-u|--use-unzip]              use unzip to weed out wrong passwords\n"
           "          [-m|--method num]             use method number \"num\" (see below)\n"
-          "          [-2|--modulo r/m]             only calculcate 1/m of the password\n"
           "          file...                    the zipfiles to crack\n"
           "\n"
     );
@@ -116,7 +105,6 @@ static struct option options[] =
   {"length", required_argument, 0, 'l'},
   {"use-unzip", no_argument, 0, 'u'},
   {"method", required_argument, 0, 'm'},
-  {"modulo", required_argument, 0, 2},
   {0, 0, 0, 0},
 };
 
@@ -157,18 +145,6 @@ main (int argc, char *argv[])
           case 2:
             ;
           }
-        break;
-
-      case 2:
-        if (sscanf (optarg, "%d/%d", &residuent, &modul) != 2)
-          fprintf (stderr, "malformed --modulo option, expected 'residuent/modul'\n"), exit (1);
-
-        if (residuent < 0 || modul <= 0)
-          fprintf (stderr, "residuent and modul must be positive\n"), exit (1);
-
-        if (residuent >= modul)
-          fprintf (stderr, "residuent must be less than modul\n"), exit (1);
-
         break;
 
       case 'B':
@@ -266,17 +242,6 @@ main (int argc, char *argv[])
             {
               set_brute_force_length (min_length, max_length);
             }
-        }
-
-      if (residuent)
-        {
-          int xmodul = modul;
-          modul = residuent;
-          pw_end = pw + strlen (pw);
-          brute_force_gen ();
-          printf ("%s\n", pw);
-          modul = xmodul;
-          printf ("WARNING: residuent mode NOT supported YET!\n");
         }
 
       crack_method->crack_pw (brute_force_gen, print_callback);
