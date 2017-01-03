@@ -23,6 +23,7 @@ void validate (method *crack_method) {
     crack_method->init_crack_pw ();
 
     strcpy (pw, "Martha");
+    pw_end = pw + strlen (pw);
     if (crack_method->crack_pw (validate_gen, true_callback)) {
       printf ("validate ok (%s == Martha)\n", pw);
     } else {

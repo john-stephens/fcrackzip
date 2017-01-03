@@ -83,7 +83,13 @@ void set_brute_force_length ( int min_length, int max_length ) {
   }
 
   *p++ = 0;         // null terminate the password
+  pw_end = pw + bf_min_length;
 
+}
+
+void set_brute_force_pw ( const char *init_pw ) {
+  strcpy (pw, init_pw);
+  pw_end = pw + strlen (pw);
 }
 
 int brute_force_gen (void) {
@@ -96,7 +102,6 @@ int brute_force_gen (void) {
     *p = bf_next[o];    // set the password char to the next char to check
 
     if (o != bf_last) { // make sure we're not on the last char to check...
-      strcpy(pw, &pw);
       return pw_end - p; // return the number of chars changed
     }
 
@@ -105,13 +110,13 @@ int brute_force_gen (void) {
   if (pw_end - pw < bf_max_length) { // if we are not at max length...
 
     p = ++pw_end;    // increment end pointer and copy to working pointer
-    *p = 0;             // null terminate the password
+    *p = 0;           // null terminate the password
 
     while (p > pw) { // fill the whole password with the first char to check
       *--p = bf_next[255];
     }
 
-    return -1;
+    return pw - pw_end;
 
   } else {
     return 0;

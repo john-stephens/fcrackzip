@@ -27,9 +27,13 @@ int dictionary_gen (void) {
    * however, not using fgets but something better might be an
    * even higher win :(
    */
+  int len = 0;
+
   if (fgets (pw, MAX_PW+1, dict_file)) {
-    pw[strlen (pw) - 1] = 0;
-    return -1;
+    len = strlen (pw);
+    pw[len - 1] = 0;
+    pw_end = pw + len;
+    return pw - pw_end;
   } else {
     if (!feof (dict_file)) {
       perror ("dictionary_read_next_password");

@@ -47,7 +47,11 @@ static int crack_pw (gen_func genfunc, callback_func cbfunc)
   int dummy; /* dummy output.  */
 #endif
 
+  u8 zip_pw[MAX_PW+1];
+  u8 *zip_pw_end;
+
   sp = 0; /* to calm down dumb compilers */
+  changed = pw - pw_end;
 
   do
     {
@@ -56,20 +60,22 @@ static int crack_pw (gen_func genfunc, callback_func cbfunc)
       u32 key0, key1, key2;
       u8 *p;
       u8 *b = files;
+
+      strcpy (zip_pw, pw);
+      zip_pw_end = zip_pw + (pw_end - pw);
       
       if (changed < 0)
         {
-          changed = strlen (pw);
-          pw_end = pw + changed;
+          changed *= -1;
           sp = key_stack + changed * 3;
         }
       
       sp -= changed * 3;
-      p = (u8 *)pw_end - changed;
+      p = (u8 *)zip_pw_end - changed;
       
       if (++crack_count >= 1000000 && verbosity)
         {
-          printf ("checking pw %-40.40s\r", pw), fflush (stdout);
+          printf ("checking pw %-40.40s\r", zip_pw), fflush (stdout);
           crack_count = 0;
         }
       
@@ -256,7 +262,7 @@ static int crack_pw (gen_func genfunc, callback_func cbfunc)
 #           endif
 #         endif
 
-          /*printf ("pw=%s, t1=%02x, t2=%02x (%02x, %02x)\n", pw, target, pre_target, b[0], b[1]);*/
+          /*printf ("pw=%s, t1=%02x, t2=%02x (%02x, %02x)\n", zip_pw, target, pre_target, b[0], b[1]);*/
           
           if (target != *b++)
             goto out;
@@ -266,7 +272,7 @@ static int crack_pw (gen_func genfunc, callback_func cbfunc)
         }
       while(--count);
       
-      if ((changed = cbfunc (pw, 0)))
+      if ((changed = cbfunc (zip_pw, 0)))
          return changed;
       
       out: ;

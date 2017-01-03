@@ -343,9 +343,6 @@ crack_cpmask (gen_func genfunc, callback_func cbfunc)
       if (changed >= 4 && verbosity)
 	printf ("checking pw %s\r", pw), fflush (stdout);
 
-      if (changed < 0)
-	pw_end = pw + strlen (pw);
-
       cp_set_pw (pw, pw_end);
       cp_do_mask ();
 

@@ -42,7 +42,7 @@ void benchmark (void) {
         files[i] = i ^ (i * 3);
 
       file_count = 3;
-      strcpy (pw, "abcdefghij");
+      set_brute_force_pw ("abcdefghij");
       parse_charset ("a");
       benchmark_count = BENCHMARK_LOOPS;
 

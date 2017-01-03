@@ -117,6 +117,7 @@ main (int argc, char *argv[])
   enum { m_benchmark, m_brute_force, m_dictionary } mode = m_brute_force;
   int min_length = -1;
   int max_length = -1;
+  u8 init_pw[MAX_PW+1];
 
   while ((c = getopt_long (argc, argv, "DbBc:hVvp:l:um:2:", options, &option_index)) != -1)
     switch (c)
@@ -130,11 +131,11 @@ main (int argc, char *argv[])
         break;
 
       case 'p':
-        strcpy (pw, optarg);
+        strcpy (init_pw, optarg);
         break;
 
       case 'l':
-        pw[0] = 0;
+        init_pw[0] = 0;
         switch (sscanf (optarg, "%d-%d", &min_length, &max_length))
           {
           default:
@@ -231,7 +232,7 @@ main (int argc, char *argv[])
     case m_brute_force:
       parse_charset (charset);
 
-      if (!pw[0])
+      if (!init_pw[0])
         {
           if (min_length < 0)
             {
@@ -243,20 +244,24 @@ main (int argc, char *argv[])
               set_brute_force_length (min_length, max_length);
             }
         }
+      else
+        {
+          set_brute_force_pw (init_pw);
+        }
 
       crack_method->crack_pw (brute_force_gen, print_callback);
       break;
 
     case m_dictionary:
-      if (!pw[0])
+      if (!init_pw[0])
         {
           fprintf (stderr, "you have to specify a file to read passwords from using the -p switch\n");
           exit (1);
         }
 
-      if (init_dictionary_gen (pw))
+      if (init_dictionary_gen (init_pw))
         {
-          perror (pw);
+          perror (init_pw);
           exit (1);
         }
       else
