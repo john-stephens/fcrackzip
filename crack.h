@@ -4,14 +4,11 @@
 #define MAX_PW		40	/* should be low, but conservative.  */
 #define BENCHMARK_LOOPS 5000000
 
-extern u8 pw[MAX_PW+1];
-extern u8 *pw_end;
-
 /* a gen_func must modify the global variables "pw" and "pw_end" to the next
  * password to be checked and return the number of characters that have
  * changed, counting from the end, or zero, to indicate end of cracking.
  */
-typedef int (*gen_func)(void);
+typedef int (*gen_func)(u8 *);
 
 /* a callback_func can investigate the passed password. nonzero
  * return values stop cracking (and the return value will be handed

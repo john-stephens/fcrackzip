@@ -7,8 +7,17 @@
 #include "validate.h"
 #include "callbacks.h"
 
-int validate_gen (void) {
-  return 0;
+static u8 validate_pw[MAX_PW+1];
+static int validate_pw_first = 1;
+
+int validate_gen (u8 *pw_copy) {
+  if (validate_pw_first == 0) {
+    return 0;
+  } else {
+    validate_pw_first = 0;           // note that we've been through here once
+    strcpy (pw_copy, validate_pw);   // copy the validate pw
+    return 0 - strlen (validate_pw); // return the negative length of the pw
+  }
 }
 
 void validate (method *crack_method) {
@@ -22,12 +31,11 @@ void validate (method *crack_method) {
   if (crack_method->desc[0] == 'z') {
     crack_method->init_crack_pw ();
 
-    strcpy (pw, "Martha");
-    pw_end = pw + strlen (pw);
+    strcpy (validate_pw, "Martha");
     if (crack_method->crack_pw (validate_gen, true_callback)) {
-      printf ("validate ok (%s == Martha)\n", pw);
+      printf ("validate ok (%s == Martha)\n", validate_pw);
     } else {
-      printf ("validation error (%s != Martha)\n", pw);
+      printf ("validation error (%s != Martha)\n", validate_pw);
     }
   } else {
     printf ("validate only works for zip methods, use --method to select one.\n");

@@ -8,6 +8,9 @@
 #include "crack.h"
 #include "brutegen.h"
 
+static u8 bf_pw[MAX_PW+1];  // the brute force password
+static u8 *bf_pw_end;       // pointer to the end of the password
+
 static u8 bf_next[256];     // linked list of chars
 static u8 bf_last;          // the last char that was checked
 
@@ -73,36 +76,37 @@ void parse_charset (char *cs) {
 /*  { int i; for (i = 0; i < 255; i++) printf ("bf_next [%3d] = %3d\n", i, bf_next[i]);}; */
 }
 
-void set_brute_force_length ( int min_length, int max_length ) {
+void set_brute_force_length (int min_length, int max_length) {
 
   bf_min_length = min_length;
   bf_max_length = max_length;
 
-  u8 *p = pw;    // pointer to the start of the password
+  u8 *p = bf_pw;    // pointer to the start of the password
 
-  while (p < pw + bf_min_length) {
+  while (p < bf_pw + bf_min_length) {
     *p++ = bf_next[255]; // fill with the first character to the min length
   }
 
   *p++ = 0;         // null terminate the password
-  pw_end = pw + bf_min_length;
+  bf_pw_end = bf_pw + bf_min_length;
   bf_first_pw = 1;
 
 }
 
-void set_brute_force_pw ( const char *init_pw ) {
-  strcpy (pw, init_pw);
-  pw_end = pw + strlen (pw);
+void set_brute_force_pw (const char *init_pw) {
+  strcpy (bf_pw, init_pw);
+  bf_pw_end = bf_pw + strlen (bf_pw);
   bf_first_pw = 1;
 }
 
-int brute_force_gen (void) {
+int brute_force_gen (u8 *pw_copy) {
 
-  u8 *p = pw_end;        // grab pointer to password end
+  u8 *p = bf_pw_end;        // grab pointer to password end
 
   if (bf_first_pw) {
     bf_first_pw = 0;
-    return pw - pw_end;  // return the negative length of the password
+    strcpy (pw_copy, bf_pw);
+    return bf_pw - bf_pw_end;  // return the negative length of the password
   }
 
   do {
@@ -111,21 +115,24 @@ int brute_force_gen (void) {
     *p = bf_next[o];     // set the password char to the next char to check
 
     if (o != bf_last) {  // make sure we're not on the last char to check...
-      return pw_end - p; // return the number of chars changed
+      strcpy (pw_copy, bf_pw);
+      return bf_pw_end - p; // return the number of chars changed
     }
 
-  } while (p > pw);      // loop so we can increment previous chars if needed
+  } while (p > bf_pw);      // loop so we can increment previous chars if needed
 
-  if (pw_end - pw < bf_max_length) { // if we are not at max length...
+  if (bf_pw_end - bf_pw < bf_max_length) { // if we are not at max length...
 
-    p = ++pw_end;        // increment end pointer and copy to working pointer
+    p = ++bf_pw_end;        // increment end pointer and copy to working pointer
     *p = 0;              // null terminate the password
 
-    while (p > pw) {     // fill the whole password with the first char to check
+    while (p > bf_pw) {     // fill the whole password with the first char to check
       *--p = bf_next[255];
     }
 
-    return pw - pw_end;  // return the negative length of the password
+    strcpy (pw_copy, bf_pw);
+
+    return bf_pw - bf_pw_end;  // return the negative length of the password
 
   } else {
     return 0;

@@ -261,13 +261,13 @@ main (int argc, char *argv[])
 
       if (init_dictionary_gen (init_pw))
         {
-          perror (init_pw);
-          exit (1);
+          crack_method->crack_pw (dictionary_gen, print_callback);
+          finish_dictionary_gen ();
         }
       else
         {
-          crack_method->crack_pw (dictionary_gen, print_callback);
-          finish_dictionary_gen ();
+          perror (init_pw);
+          exit (1);
         }
 
       break;

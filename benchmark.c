@@ -20,12 +20,12 @@
 
 static int benchmark_count;
 
-int benchmark_gen (void) {
+int benchmark_gen (u8 *pw_copy) {
   if (!--benchmark_count) {
     return 0;
   }
 
-  return brute_force_gen ();
+  return brute_force_gen (pw_copy);
 }
 
 void benchmark (void) {

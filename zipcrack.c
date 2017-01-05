@@ -48,11 +48,10 @@ static int crack_pw (gen_func genfunc, callback_func cbfunc)
 #endif
 
   u8 zip_pw[MAX_PW+1];
-  u8 *zip_pw_end;
 
   sp = 0; /* to calm down dumb compilers */
 
-  while ((changed = genfunc ()))
+  while ((changed = genfunc (zip_pw)))
     {
       int count = file_count;
       int count2 = 0;
@@ -60,17 +59,17 @@ static int crack_pw (gen_func genfunc, callback_func cbfunc)
       u8 *p;
       u8 *b = files;
 
-      strcpy (zip_pw, pw);
-      zip_pw_end = zip_pw + (pw_end - pw);
-      
       if (changed < 0)
         {
           changed *= -1;
-          sp = key_stack + changed * 3;
+          sp = key_stack;
+          p = zip_pw;
         }
-      
-      sp -= changed * 3;
-      p = (u8 *)zip_pw_end - changed;
+      else
+        {
+          sp -= changed * 3;
+          p -= changed;
+        }
       
       if (++crack_count >= 1000000 && verbosity)
         {

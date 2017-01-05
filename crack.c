@@ -7,9 +7,6 @@
 #include <string.h>
 #include "crack.h"
 
-u8 pw[MAX_PW + 1] = "aaaaaa";
-u8 *pw_end;			/* must point to the trailing zero byte.  */
-
 u8 files[MAX_FILES * HEADER_SIZE];
 const char *file_path[MAX_FILES];
 int file_count;

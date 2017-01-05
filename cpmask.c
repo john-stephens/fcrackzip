@@ -338,12 +338,17 @@ crack_cpmask (gen_func genfunc, callback_func cbfunc)
   int changed = -1;
   int x, y;
 
-  while ((changed = genfunc ()))
-    {
-      if (changed >= 4 && verbosity)
-        printf ("checking pw %s\r", pw), fflush (stdout);
+  u8 cp_pw[MAX_PW+1];
+  u8 *cp_pw_end;
 
-      cp_set_pw (pw, pw_end);
+  while ((changed = genfunc (cp_pw)))
+    {
+      cp_pw_end = cp_pw + strlen (cp_pw);
+
+      if (changed >= 4 && verbosity)
+        printf ("checking pw %s\r", cp_pw), fflush (stdout);
+
+      cp_set_pw (cp_pw, cp_pw_end);
       cp_do_mask ();
 
 #define P(x,y,c) (UI)dst_pixel((x),(y),(c))
@@ -381,7 +386,7 @@ overflow:
 
           sprintf (info, "badness %ld", current);
 
-          if ((changed = cbfunc (pw, info)))
+          if ((changed = cbfunc (cp_pw, info)))
             return changed;
         }
 
