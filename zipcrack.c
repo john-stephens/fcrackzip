@@ -51,9 +51,8 @@ static int crack_pw (gen_func genfunc, callback_func cbfunc)
   u8 *zip_pw_end;
 
   sp = 0; /* to calm down dumb compilers */
-  changed = pw - pw_end;
 
-  do
+  while ((changed = genfunc ()))
     {
       int count = file_count;
       int count2 = 0;
@@ -277,7 +276,6 @@ static int crack_pw (gen_func genfunc, callback_func cbfunc)
       
       out: ;
     }
-  while ((changed = genfunc ()));
   
   return 0;
 }

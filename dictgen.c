@@ -16,7 +16,7 @@ int init_dictionary_gen (const char *filename) {
     return 0;
   } else {
     *(pw_end = pw) = 0;
-    dictionary_gen (); /* fetch first password */
+//    dictionary_gen (); /* fetch first password */
     return 1;
   }
 

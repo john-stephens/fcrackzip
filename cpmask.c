@@ -63,50 +63,50 @@ load_img (const char *name)
     {
       img = fopen (name, "rb");
       if (img)
-	{
-	  if (fscanf (img, "P6 ") == EOF)
-	    perror ("no BINARY PPM header detected");
-	  else
-	    {
-	      fscanf (img, "#%*[^\012\015] ");	/* comment */
-	      if (fscanf (img, "%u ", &image_width) != 1)
-		fprintf (stderr, "unable to read image width\n");
-	      else
-		{
-		  fscanf (img, "#%*[^\012\015] ");	/* comment */
-		  if (fscanf (img, "%u ", &image_height) != 1)
-		    fprintf (stderr, "unable to read image height\n");
-		  else
-		    {
-		      fscanf (img, "#%*[^\012\015] ");	/* comment */
-		      if (fscanf (img, "%u%*[ \012\015] ", &image_depth) != 1)
-			fprintf (stderr, "unable to read image depth\n");
-		      else
-			{
-			  if (image_depth != 255)
-			    fprintf (stderr, "pixel maxval %d (!= 255) is not supported\n", image_depth);
-			  else
-			    {
-			      image_data = (u8 *) malloc (image_width * image_height * CP_BPP);
-			      if (!image_data)
-				fprintf (stderr, "unable to allocate memory for image\n");
-			      else
-				{
-				  if (fread (image_data, image_width * image_height * CP_BPP, 1, img) != 1)
-				    fprintf (stderr, "unable to read image data\n");
-				  else
-				    {
-				      /*fprintf (stderr, "read image %dx%d, %d\n", image_width, image_height, image_depth); */
-				      file_path[file_count++] = name;
-				    }
-				}
-			    }
-			}
-		    }
-		}
-	      fclose (img);
-	    }
-	}
+        {
+          if (fscanf (img, "P6 ") == EOF)
+            perror ("no BINARY PPM header detected");
+          else
+            {
+              fscanf (img, "#%*[^\012\015] ");	/* comment */
+              if (fscanf (img, "%u ", &image_width) != 1)
+                fprintf (stderr, "unable to read image width\n");
+              else
+                {
+                  fscanf (img, "#%*[^\012\015] ");	/* comment */
+                  if (fscanf (img, "%u ", &image_height) != 1)
+                    fprintf (stderr, "unable to read image height\n");
+                  else
+                    {
+                      fscanf (img, "#%*[^\012\015] ");	/* comment */
+                      if (fscanf (img, "%u%*[ \012\015] ", &image_depth) != 1)
+                        fprintf (stderr, "unable to read image depth\n");
+                      else
+                        {
+                          if (image_depth != 255)
+                            fprintf (stderr, "pixel maxval %d (!= 255) is not supported\n", image_depth);
+                          else
+                            {
+                              image_data = (u8 *) malloc (image_width * image_height * CP_BPP);
+                              if (!image_data)
+                                fprintf (stderr, "unable to allocate memory for image\n");
+                              else
+                                {
+                                  if (fread (image_data, image_width * image_height * CP_BPP, 1, img) != 1)
+                                    fprintf (stderr, "unable to read image data\n");
+                                  else
+                                    {
+                                      /*fprintf (stderr, "read image %dx%d, %d\n", image_width, image_height, image_depth); */
+                                      file_path[file_count++] = name;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+              fclose (img);
+            }
+        }
     }
 }
 
@@ -151,10 +151,10 @@ cp_set_pw (u8 * pw, u8 * pw_end)
       trans++;
 
       if (++x == cp_width)
-	{
-	  x = 0;
-	  y++;
-	}
+        {
+          x = 0;
+          y++;
+        }
     }
 
   x = cp_cells - 1;
@@ -165,45 +165,45 @@ cp_set_pw (u8 * pw, u8 * pw_end)
       x = cp_key[*cursor - 'A'] + x + y;
 
       if (++cursor == pw_end)
-	cursor = pw;
+        cursor = pw;
 
       if (x >= cp_cells)
-	x -= cp_cells;
+        x -= cp_cells;
 
       if (x >= cp_cells)
-	x -= cp_cells;
+        x -= cp_cells;
 
       while (cp_table[x] != -1)
-	{
-	  ++x;
-	  if (x >= cp_cells)
-	    x = 0;
-	}
+        {
+          ++x;
+          if (x >= cp_cells)
+            x = 0;
+        }
 
       cp_table[x] = i;
       y++;
 
       if (++i >= cp_cells)
-	break;
+        break;
 
       x = cp_key[*cursor - 'A'] + x + y;
 
       if (++cursor == pw_end)
-	cursor = pw;
+        cursor = pw;
 
       if (x >= cp_cells)
-	x -= cp_cells;
+        x -= cp_cells;
 
       if (x >= cp_cells)
-	x -= cp_cells;
+        x -= cp_cells;
 
       while (cp_table[x] != -1)
-	{
-	  if (x == 0)
-	    x = cp_cells;
+        {
+          if (x == 0)
+            x = cp_cells;
 
-	  x--;
-	}
+          x--;
+        }
 
       cp_table[x] = i;
       y++;
@@ -217,10 +217,10 @@ cp_set_pw (u8 * pw, u8 * pw_end)
       cp_trans[cp_table[j]].dst_y = cp_table_lu2[i];
 
       if ((cp_table[i] ^ cp_table[j]) & 1)
-	{
-	  cp_trans[cp_table[i]].mirror = 1;
-	  cp_trans[cp_table[j]].mirror = 1;
-	}
+        {
+          cp_trans[cp_table[i]].mirror = 1;
+          cp_trans[cp_table[j]].mirror = 1;
+        }
     }
 }
 
@@ -238,17 +238,17 @@ cp_do_mask (void)
   for (y = 0; y < cp_height; ++y)
     {
       for (x = 0; x < cp_width; ++x)
-	{
-	  {
-	    u = cell->dst_x;
-	    v = cell->dst_y;
-	    rot = cell->mirror;
-	    cell++;
-	    dst_x = x * CP_CELL_SIZE + OFFSET_X;
-	    dst_y = y * CP_CELL_SIZE + OFFSET_Y;
-	    src_x = u * CP_CELL_SIZE + OFFSET_X;
-	    src_y = v * CP_CELL_SIZE + OFFSET_Y;
-	  }
+        {
+          {
+            u = cell->dst_x;
+            v = cell->dst_y;
+            rot = cell->mirror;
+            cell++;
+            dst_x = x * CP_CELL_SIZE + OFFSET_X;
+            dst_y = y * CP_CELL_SIZE + OFFSET_Y;
+            src_x = u * CP_CELL_SIZE + OFFSET_X;
+            src_y = v * CP_CELL_SIZE + OFFSET_Y;
+          }
 
 #define   COPY(sx,sy,dx,dy) do { \
             u8 *s = &src_pixel (src_x + (sx), src_y + (sy), 0);	\
@@ -256,36 +256,36 @@ cp_do_mask (void)
             *d++ = *s++;	\
             *d++ = *s++;	\
             *d++ = *s++;	\
-	  } while(0)
+          } while(0)
 
-	  if (dst_x + CP_CELL_SIZE <= transform_width &&
-	      dst_y + CP_CELL_SIZE <= transform_height)
-	    {
-	      if (rot)
-		{
-		  /* this is shit */
-		  for (xx = CP_CELL_SIZE - 1; xx--;)
-		    {
-		      COPY (xx + 1, 0, 0, xx + 1);
-		      COPY (0, xx, xx, 0);
-		      COPY (xx, CP_CELL_SIZE - 1, CP_CELL_SIZE - 1, xx);
-		      COPY (CP_CELL_SIZE - 1, xx + 1, xx + 1, CP_CELL_SIZE - 1);
-		    }
-		}
-	      else
-		{
-		  for (xx = CP_CELL_SIZE; xx--;)
-		    {
-		      COPY (xx + 1, 0, xx + 1, 0);
-		      COPY (0, xx, 0, xx);
-		      COPY (xx, CP_CELL_SIZE - 1, xx, CP_CELL_SIZE - 1);
-		      COPY (CP_CELL_SIZE - 1, xx + 1, CP_CELL_SIZE - 1, xx + 1);
-		    }
-		}
-	    }
+          if (dst_x + CP_CELL_SIZE <= transform_width &&
+              dst_y + CP_CELL_SIZE <= transform_height)
+            {
+              if (rot)
+                {
+                  /* this is shit */
+                  for (xx = CP_CELL_SIZE - 1; xx--;)
+                    {
+                      COPY (xx + 1, 0, 0, xx + 1);
+                      COPY (0, xx, xx, 0);
+                      COPY (xx, CP_CELL_SIZE - 1, CP_CELL_SIZE - 1, xx);
+                      COPY (CP_CELL_SIZE - 1, xx + 1, xx + 1, CP_CELL_SIZE - 1);
+                    }
+                }
+              else
+                {
+                  for (xx = CP_CELL_SIZE; xx--;)
+                    {
+                      COPY (xx + 1, 0, xx + 1, 0);
+                      COPY (0, xx, 0, xx);
+                      COPY (xx, CP_CELL_SIZE - 1, xx, CP_CELL_SIZE - 1);
+                      COPY (CP_CELL_SIZE - 1, xx + 1, CP_CELL_SIZE - 1, xx + 1);
+                    }
+                }
+            }
 
 #undef COPY
-	}
+        }
     }
 //  {FILE *f=fopen("x.ppm","wb"); fprintf (f,"P6 %d %d %d ",transform_width,transform_height,255); fwrite(transform_data,transform_width*transform_height*CP_BPP,1,f); fclose(f); }
 }
@@ -338,10 +338,10 @@ crack_cpmask (gen_func genfunc, callback_func cbfunc)
   int changed = -1;
   int x, y;
 
-  do
+  while ((changed = genfunc ()))
     {
       if (changed >= 4 && verbosity)
-	printf ("checking pw %s\r", pw), fflush (stdout);
+        printf ("checking pw %s\r", pw), fflush (stdout);
 
       cp_set_pw (pw, pw_end);
       cp_do_mask ();
@@ -350,43 +350,42 @@ crack_cpmask (gen_func genfunc, callback_func cbfunc)
       current = 0;
 
       for (x = CP_CELL_SIZE; x < transform_width; x += CP_CELL_SIZE)
-	for (y = transform_height; y--;)
-	  {
-	    current += abs (P (x - 1, y, 0) - P (x, y, 0));
-	    current += abs (P (x - 1, y, 1) - P (x, y, 1));
-	    current += abs (P (x - 1, y, 2) - P (x, y, 2));
+        for (y = transform_height; y--;)
+          {
+            current += abs (P (x - 1, y, 0) - P (x, y, 0));
+            current += abs (P (x - 1, y, 1) - P (x, y, 1));
+            current += abs (P (x - 1, y, 2) - P (x, y, 2));
 
             if (current > minimum)
               goto overflow;
-	  }
+          }
 
       for (y = CP_CELL_SIZE; y < transform_height && current < minimum; y += CP_CELL_SIZE)
-	for (x = transform_width; x-- && current < minimum;)
-	  {
-	    current += abs (P (x, y - 1, 0) - P (x, y, 0));
-	    current += abs (P (x, y - 1, 1) - P (x, y, 1));
-	    current += abs (P (x, y - 1, 2) - P (x, y, 2));
+        for (x = transform_width; x-- && current < minimum;)
+          {
+            current += abs (P (x, y - 1, 0) - P (x, y, 0));
+            current += abs (P (x, y - 1, 1) - P (x, y, 1));
+            current += abs (P (x, y - 1, 2) - P (x, y, 2));
 
             if (current > minimum)
               goto overflow;
-	  }
+          }
 #undef P
 
 overflow:
       if (current < minimum)
-	{
-	  char info[80];
+        {
+          char info[80];
 
-	  minimum = current + 99;
+          minimum = current + 99;
 
-	  sprintf (info, "badness %ld", current);
+          sprintf (info, "badness %ld", current);
 
-	  if ((changed = cbfunc (pw, info)))
-	    return changed;
-	}
+          if ((changed = cbfunc (pw, info)))
+            return changed;
+        }
 
     }
-  while ((changed = genfunc ()));
 
   return 0;
 }

@@ -14,6 +14,8 @@ static u8 bf_last;          // the last char that was checked
 static int bf_min_length = -1;
 static int bf_max_length = -1;
 
+static int bf_first_pw = 0;
+
 void parse_charset (char *cs) {
   u8 chars[800];
   u8 map[256];
@@ -84,39 +86,46 @@ void set_brute_force_length ( int min_length, int max_length ) {
 
   *p++ = 0;         // null terminate the password
   pw_end = pw + bf_min_length;
+  bf_first_pw = 1;
 
 }
 
 void set_brute_force_pw ( const char *init_pw ) {
   strcpy (pw, init_pw);
   pw_end = pw + strlen (pw);
+  bf_first_pw = 1;
 }
 
 int brute_force_gen (void) {
 
-  u8 *p = pw_end;    // grab pointer to password end
+  u8 *p = pw_end;        // grab pointer to password end
+
+  if (bf_first_pw) {
+    bf_first_pw = 0;
+    return pw - pw_end;  // return the negative length of the password
+  }
 
   do {
 
-    u8 o = *--p;        // move pointer back and grab the password char
-    *p = bf_next[o];    // set the password char to the next char to check
+    u8 o = *--p;         // move pointer back and grab the password char
+    *p = bf_next[o];     // set the password char to the next char to check
 
-    if (o != bf_last) { // make sure we're not on the last char to check...
+    if (o != bf_last) {  // make sure we're not on the last char to check...
       return pw_end - p; // return the number of chars changed
     }
 
-  } while (p > pw);  // loop so we can increment previous chars if needed
+  } while (p > pw);      // loop so we can increment previous chars if needed
 
   if (pw_end - pw < bf_max_length) { // if we are not at max length...
 
-    p = ++pw_end;    // increment end pointer and copy to working pointer
-    *p = 0;           // null terminate the password
+    p = ++pw_end;        // increment end pointer and copy to working pointer
+    *p = 0;              // null terminate the password
 
-    while (p > pw) { // fill the whole password with the first char to check
+    while (p > pw) {     // fill the whole password with the first char to check
       *--p = bf_next[255];
     }
 
-    return pw - pw_end;
+    return pw - pw_end;  // return the negative length of the password
 
   } else {
     return 0;
